@@ -1,0 +1,34 @@
+---
+title: "P8105 Homework 5"
+name: "Jessie Wong"
+date: '`r format(Sys.time(), "%Y-%m-%d")`'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(rvest)
+```
+
+## Problem 1 
+
+The zip file that we are using in this problem is from a longitudinal study that has a control arm and an experimental arm. 
+
+Create a tidy dataframe containing data from all participants, including the subject ID, arm, and observations over time:
+
+Start with a dataframe containing all file names; the `list.files` function will help 
+```{r}
+# Loaded the multiple .csv in the data file and placed them into the same data frame
+data <- "/Users/jessiewong/Desktop/p8105_hw5/p8105_5/data/"
+file_list <- list.files(path = data, pattern = "*.csv")
+
+study <- 
+  do.call("rbind",
+          lapply(file_list,
+                 function(x)
+                   read.csv(paste(data, x, sep = ''),
+                            stringsAsFactors = FALSE)))
+```
+
