@@ -27,7 +27,6 @@ data_df = tibble(subject_ID = list.files(path = "./data", pattern = "*.csv", ful
 ```
 
 - Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
-
 ```{r}
 study_df = data_df %>%
   gather(key = week, value = observation, week_1:week_8) %>%
@@ -38,10 +37,21 @@ study_df = data_df %>%
   select(-starts_with("remove")) %>%
   arrange(arm, subject_id, week)
 
+study_df$arm[study_df$arm == "con"] = "control"
+study_df$arm[study_df$arm == "exp"] = "experimental"
 ```
 
+Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
 ```{r}
-
+study_df %>% 
+  group_by(week, arm) %>% 
+  ggplot(aes(x = week, y = observation, group = subject_id, color = subject_id)) +
+  geom_path() + 
+  facet_grid(~arm) +
+  labs(title = "Observation Across Study Arm Subjects During Week 1-8") + 
+  viridis::scale_color_viridis(
+    name = "subject", 
+    discrete = TRUE)
 ```
 
 ```{r}
