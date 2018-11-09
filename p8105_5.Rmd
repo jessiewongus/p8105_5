@@ -13,6 +13,8 @@ library(rvest)
 library(tidyr)
 ```
 
+**Context**: This assignment reinforces ideas in Iteration.
+
 ## Problem 1 
 
 The `data` zip file that we are using in this problem is from a longitudinal study that has a control arm and an experimental arm. 
@@ -64,8 +66,11 @@ The Washington Post has gathered data on homicides in 50 large U.S. cities and m
 Describe the raw data. 
 ```{r}
 # Read the raw data from the Github repository and clean data
-homicides = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") 
+homicides = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>%
+  separate(reported_date, into = c("year", "daymonth"), sep = 4) %>%
+  separate(daymonth, into = c("day", "month"), sep = 2)
 ```
+
 The raw data contains `r nrow(homicides)` cases of homicides across the 50 states. The data reports information about the victims including their age, name (first and last), gender. In addition information about where and when the homicides occurred is also provided, including the city, state, latitude, and longtitude. Finally in the last column there is information about whether the case was solved (closed with arrest) or unsolved (closed without an arrest).
 
 Create a city_state variable (e.g. “Baltimore, MD”) and then summarize within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
@@ -114,6 +119,7 @@ unsolved_prop = prop.test(1825, 2827, correct = T)
 unsolved = broom::tidy(unsolved_prop) %>%
     select(estimate, conf.low, conf.high)
 ```
+
 In Baltimore, MD, there were a total of `r balt_hom1$unsolved_hom` unsolved homicides out of a total of `r balt_hom2$total_hom` homicides in the city. After using `prop.test`, we identified that the estimated proportion of unsolved homicides is `r unsolved_prop$estimate`, with a lower confidence internval of `r unsolved_prop$conf.low` and an upper confidence interval of `r unsolved_prop$conf.high`.
 
 Now run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. Do this within a “tidy” pipeline, making use of purrr::map,  purrr::map2, list columns and unnest as necessary to create a tidy dataframe with estimated proportions and CIs for each city.
@@ -145,10 +151,7 @@ prop_unnest %>%
   labs(title = "Proportion of Unsolved Homicides in the US by Cities",
        x = "City and State",
        y = "Unsolved Homicide Proportion") + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  viridis::scale_color_viridis(
-    name = "Day", 
-    discrete = TRUE)
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 ```
 
 From the `Proportion of Unsolved Homicides in the US by Cities` plot above, we can see that the city with the lowest proportion of unsolved homicides is Richmond, VA and the city with the highest proportion is Chicago, Il. In addition to having the highest proportion, it has the smallest confidence interval length that does not overlap with any of the other cities.  
