@@ -138,8 +138,18 @@ prop_unnest = prop_nest %>%
 Create a plot that shows the estimates and CIs for each city – check out geom_errorbar for a way to add error bars based on the upper and lower limits. Organize cities according to the proportion of unsolved homicides.
 ```{r}
 prop_unnest %>%
-  ggplot(aes(x = city_state, y = estimate))  
-
+  mutate(city_state = fct_reorder(city_state, estimate)) %>%
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() + 
+  geom_errorbar(aes(min = conf.low, max = conf.high)) +
+  labs(title = "Proportion of Unsolved Homicides in the US by Cities",
+       x = "City and State",
+       y = "Unsolved Homicide Proportion") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  viridis::scale_color_viridis(
+    name = "Day", 
+    discrete = TRUE)
 ```
 
+From the `Proportion of Unsolved Homicides in the US by Cities` plot above, we can see that the city with the lowest proportion of unsolved homicides is Richmond, VA and the city with the highest proportion is Chicago, Il. In addition to having the highest proportion, it has the smallest confidence interval length that does not overlap with any of the other cities.  
 
