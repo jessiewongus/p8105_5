@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dplyr)
 library(rvest)
+library(tidyr)
 ```
 
 ## Problem 1 
@@ -54,7 +55,59 @@ study_df %>%
     discrete = TRUE)
 ```
 
+Based on the spaghetti plot above, we can see a difference in observation values from week 1 to week 8 among the control and experimental subjects. In the control arm, while there are variation across the weeks, the subjects' observation values remained relatively in the same range from week 1 and 8. However, for the experimental arm, we can see an overall increase in observation values from week 1 to week 9 among all of the subjects. 
+
+## Problem 2
+
+The Washington Post has gathered data on homicides in 50 large U.S. cities and made the data available through a GitHub repository. 
+
+Describe the raw data. 
+```{r}
+# Read the raw data from the Github repository
+homicides = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
+```
+((DESCRIBE THE RAW DATA HERE))
+
+Create a city_state variable (e.g. “Baltimore, MD”) and then summarize within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
+```{r}
+# Created a city_state variable
+homicides1 = homicides %>%
+  transform(homicides, city_state = paste(city, state, sep = ", ")) 
+
+# Summarize total number of homicides
+total_hom = homicides1 %>%
+  group_by(city_state) %>%
+  filter(disposition.1 == "Closed by arrest") %>%
+  summarize(total_hom = n()) 
+
+# Summarize total number of unsolved homicides ("Closed without arrest" or "Open/No arrest")  
+unsolved_hom = homicides1 %>%
+  group_by(city_state) %>%
+  filter(disposition.1 %in% c("Closed without arrest", "Open/No arrest")) %>%
+  summarize(unsolved_hom = n()) 
+```
+((DESCRIBE THE NUMBERS, observations from the numbers))
+
+For the city of Baltimore, MD, use the prop.test function to estimate the proportion of homicides that are unsolved; save the output of prop.test as an R object, apply the broom::tidy to this object and pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
 ```{r}
 
 ```
+
+Now run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. Do this within a “tidy” pipeline, making use of purrr::map,  purrr::map2, list columns and unnest as necessary to create a tidy dataframe with estimated proportions and CIs for each city.
+```{r}
+
+```
+
+Create a plot that shows the estimates and CIs for each city – check out geom_errorbar for a way to add error bars based on the upper and lower limits. Organize cities according to the proportion of unsolved homicides.
+```{r}
+
+```
+
+
+
+
+
+
+
+
 
